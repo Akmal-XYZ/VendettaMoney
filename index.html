@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VendettaMoney</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #FFFFFF80;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .box {
+            padding: 15px;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .box.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        input[type="text"], input[type="password"] {
+            width: 95%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .payment-img {
+            width: 30px; /* Sesuaikan dengan ukuran yang diinginkan */
+            height: 30px; /* Sesuaikan dengan ukuran yang diinginkan */
+            margin-left: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="page1">
+    <h2>Vendetta Login</h2>
+    <input type="text" id="name" placeholder="Masukkan Nama IC" />
+    <input type="password" id="password" placeholder="Masukkan Password" />
+    <button onclick="submitPage1()">Submit</button>
+    <p id="error-message" style="color:red;"></p>
+</div>
+
+<div class="container" id="page2" style="display:none;">
+    <h2>Pilih Uang OOC</h2>
+    <div class="box" data-value="10000" onclick="selectBox(this)">Rp 10.000 (IC: $10.000)</div>
+    <div class="box" data-value="20000" onclick="selectBox(this)">Rp 20.000 (IC: $20.000)</div>
+    <div class="box" data-value="30000" onclick="selectBox(this)">Rp 30.000 (IC: $30.000)</div>
+    <div class="box" data-value="40000" onclick="selectBox(this)">Rp 40.000 (IC: $40.000)</div>
+    <div class="box" data-value="50000" onclick="selectBox(this)">Rp 50.000 (IC: $50.000)</div>
+    <div class="box" data-value="60000" onclick="selectBox(this)">Rp 60.000 (IC: $60.000)</div>
+    <button onclick="submitPage2()">Tukar Uang</button>
+</div>
+
+<div class="container" id="page3" style="display:none;">
+    <h2>Pilih Metode Pembayaran</h2>
+    <div class="box" onclick="selectPayment(this)">Bank BCA <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiEShyphenhyphenecrz4Lyrs3a8-h3oG-6Hqh5FMdYhVba8_4NMy_60IXDS6stwE6cSp_LL9TfhfpLM4I6IyGZTZUL5ZfTOHAsTKTYx8FqW3xVPM0_RiXRRBgoajU6OT-G5BXtKPFzMsfrnBgmTq2OCD/s1000/logo+bank+bca-01.png" class="payment-img" alt="Bank BCA"/></div>
+    <div class="box" onclick="selectPayment(this)">Dana <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGglzp3pi04sdTe7teWwIj3abbA0HHqwYcxwzXVWi5ueYhk_MwQge3tE8&s=10" class="payment-img" alt="Dana"/></div>
+    <div class="box" onclick="selectPayment(this)">OVO <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdwwVM1hSxTmNvyMp77-MIj5aJ_LMhRqbI-8bZSu314HWax0z5YgbWTnEo&s=10" class="payment-img" alt="OVO"/></div>
+    <div class="box" onclick="selectPayment(this)">GoPay <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5duX_yTAmVdmLKZRTO-x84-hdxJxXRMUuQeMpxaQIPf8Av85L6rksvOo&s=10" class="payment-img" alt="GoPay"/></div>
+    <div class="box" onclick="selectPayment(this)">Spay Later <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTzHDscILZK9I-x_o9lppxJG64QbuQ7oz8nmPi2cwjvT2jee7ZyZc2XscL&s=10" class="payment-img" alt="Spay Later"/></div>
+    <div class="box" onclick="selectPayment(this)">Bank BRI <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQx54YblPzdNgqJ7CL_r71aEU4dQqzBScRS8g&usqp=CAU" class="payment-img" alt="Bank BRI"/></div>
+    <button onclick="submitPage3()">Konfirmasi Pembayaran</button>
+</div>
+
+<script>
+    let selectedBox = null;
+    let passwordAttempt = 0;
+
+    function submitPage1() {
+        const name = document.getElementById('name').value;
+        const password = document.getElementById('password').value;
+        const errorMessage = document.getElementById('error-message');
+
+        // Validasi nama
+        const nameValid = /^[a-zA-Z_]+$/.test(name);
+        if (!nameValid) {
+            errorMessage.textContent = "Nama IC tidak di isi dengan benar atau belum di terdaftar di Vendetta weapon.";
+            return;
+        }
+
+        // Validasi password
+        if (passwordAttempt === 0) {
+            errorMessage.textContent = "Tolong isi password dengan benar.";
+            passwordAttempt++;
+
+            // Reset input jika password salah
+            document.getElementById('name').value = '';
+            document.getElementById('password').value = '';
+            return;
+        }
+
+        errorMessage.textContent = "";
+        document.getElementById('page1').style.display = 'none';
+        document.getElementById('page2').style.display = 'block';
+    }
+
+    function selectBox(box) {
+        const boxes = document.querySelectorAll('.box');
+        boxes.forEach(b => b.classList.remove('selected'));
+        box.classList.add('selected');
+        selectedBox = box;
+    }
+
+    function submitPage2() {
+        if (!selectedBox) {
+            alert("Silakan pilih kotak terlebih dahulu.");
+            return;
+        }
+        document.getElementById('page2').style.display = 'none';
+        document.getElementById('page3').style.display = 'block';
+    }
+
+    function selectPayment(paymentBox) {
+        const paymentBoxes = document.querySelectorAll('.container:nth-child(3) .box');
+        paymentBoxes.forEach(b => b.classList.remove('selected'));
+        paymentBox.classList.add('selected');
+    }
+
+    function submitPage3() {
+        const selectedPayment = document.querySelector('.container:nth-child(3) .box.selected');
+        if (!selectedPayment) {
+            alert("Silakan pilih metode pembayaran terlebih dahulu.");
+            return;
+        }
+        alert("Anda tidak dapat mengkonfirmasi metode pembayaran karena uang IC anda  belum mencukupi, silahkan push kill lagi dan kumpulan uang IC mu hingga mencukupi.");
+    }
+</script>
+
+</body>
+</html>
+
+
+  
+  <style>
+    @keyframes colorBlink {
+      0%, 100% { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
+      33% { color: #ff0000; text-shadow: 0 0 20px #ffffff; }
+      66% { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
+    }
+
+    h2 {
+      animation: colorBlink 3s infinite;
+    }
+  </style>
+
+
+
+ <style>
+    body {
+      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkxaH5fYQP4Ijuvo9xeufq4gdVQTkpD4YSYj0PHvsLn-6hr-zhDa_6hSY&s=10');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+  </style>
